@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>System</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background:
+        radial-gradient(
+            ellipse at center,
+            #16001f 0%,
+            #050006 55%,
+            #000 100%
+        );
+}
+
+
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
+
+#glow {
+    position: fixed;
+    width: 70vw;
+    height: 70vw;
+    max-width: 900px;
+    max-height: 900px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(170, 0, 255, 0.18),
+            transparent 65%
+        );
+
+    filter: blur(30px);
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   SCANLINES
+========================================================= */
+
+#scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,.025) 0px,
+            rgba(255,255,255,.025) 1px,
+            transparent 2px,
+            transparent 5px
+        );
+}
+
+
+/* =========================================================
+   VIGNETTE
+========================================================= */
+
+#vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+
+    background:
+        radial-gradient(
+            circle,
+            transparent 40%,
+            rgba(0,0,0,.85) 100%
+        );
+}
+
+
+/* =========================================================
+   ENTER
+========================================================= */
+
+#enterScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #000;
+
+    transition:
+        opacity .7s ease,
+        transform .7s ease;
+}
+
+#enterButton {
+    padding: 22px 60px;
+
+    background: rgba(0,0,0,.5);
+
+    border: 3px solid #ff00ff;
+
+    color: white;
+
+    font-size: clamp(20px,4vw,40px);
+
+    font-weight: 900;
+
+    letter-spacing: 10px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 15px #ff00ff,
+        0 0 40px rgba(255,0,255,.4),
+        inset 0 0 20px rgba(255,0,255,.15);
+
+    text-shadow:
+        0 0 10px white,
+        0 0 20px #ff00ff;
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+#enterButton:hover {
+    transform: scale(1.08);
+
+    box-shadow:
+        0 0 20px #ff00ff,
+        0 0 70px #ff00ff,
+        inset 0 0 30px rgba(255,0,255,.25);
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+#intro {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #000;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+#countdown {
+    font-size: clamp(150px,30vw,400px);
+    font-weight: 1000;
+
+    color: white;
+
+    text-shadow:
+        0 0 10px white,
+        0 0 30px #ff00ff,
+        0 0 80px #8a00ff,
+        0 0 150px #6500ff;
+}
+
+.countdownAnimation {
+    animation: countPop 1s ease;
+}
+
+@keyframes countPop {
+    0% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+#main {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+
+    transform: scale(1.08);
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+
+/* =========================================================
+   ASCII
+========================================================= */
+
+#asciiContainer {
+    position: absolute;
+
+    left: 1vw;
+    right: 1vw;
+
+    top: 8vh;
+    bottom: 5vh;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+#ascii {
+    margin: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    white-space: pre;
+
+    font-family:
+        "Noto Sans Symbols 2",
+        "Segoe UI Symbol",
+        "Courier New",
+        monospace;
+
+    font-size:
+        clamp(5px,.72vw,12px);
+
+    line-height: .92;
+
+    letter-spacing: -.8px;
+
+    color: #f4f4f4;
+
+    text-shadow:
+        0 0 4px rgba(255,255,255,.7),
+        0 0 12px rgba(180,0,255,.25);
+
+    opacity: 0;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+#title {
+    position: absolute;
+
+    top: 2vh;
+
+    left: 0;
+    right: 0;
+
+    text-align: center;
+
+    font-size: clamp(18px,3vw,42px);
+
+    font-weight: 1000;
+
+    letter-spacing: 8px;
+
+    color: white;
+
+    text-shadow:
+        0 0 5px white,
+        0 0 15px #ff00ff,
+        0 0 35px #ff00ff;
+
+    animation: titleGlitch 3s infinite;
+}
+
+@keyframes titleGlitch {
+
+    0%,90%,100% {
+        transform: translate(0);
+    }
+
+    92% {
+        transform: translate(-3px,1px);
+    }
+
+    94% {
+        transform: translate(3px,-1px);
+    }
+
+    96% {
+        transform: translate(-2px,0);
+    }
+}
+
+
+/* =========================================================
+   RICKY IMAGES
+========================================================= */
+
+.ricky {
+    position: absolute;
+
+    width: clamp(100px,15vw,260px);
+
+    max-height: 38vh;
+
+    object-fit: contain;
+
+    z-index: 30;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 12px rgba(255,0,255,.8));
+}
+
+
+/* Original Ricky */
+
+#ricky {
+    right: 2vw;
+    bottom: 1vh;
+
+    transform:
+        translateX(150px)
+        rotate(8deg);
+}
+
+
+/* Ricky 2 */
+
+#ricky2 {
+    left: 1vw;
+    top: 2vh;
+
+    transform:
+        translateX(-150px)
+        rotate(-8deg);
+}
+
+
+/* Ricky 3 */
+
+#ricky3 {
+    right: 2vw;
+    top: 4vh;
+
+    transform:
+        translateY(-150px)
+        rotate(8deg);
+}
+
+
+/* Ricky entrance */
+
+.rickyShow {
+    animation:
+        rickyEnter
+        .8s
+        cubic-bezier(.2,1.5,.3,1)
+        forwards;
+}
+
+@keyframes rickyEnter {
+
+    0% {
+        opacity: 0;
+        transform:
+            translateX(150px)
+            rotate(15deg)
+            scale(.5);
+    }
+
+    70% {
+        transform:
+            translateX(-10px)
+            rotate(-3deg)
+            scale(1.08);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            translateX(0)
+            rotate(0)
+            scale(1);
+    }
+}
+
+
+/* Individual entrances */
+
+.rickyTwoShow {
+    animation:
+        rickyTwoEnter
+        .8s
+        cubic-bezier(.2,1.5,.3,1)
+        forwards;
+}
+
+@keyframes rickyTwoEnter {
+
+    0% {
+        opacity: 0;
+        transform:
+            translateX(-150px)
+            rotate(-15deg)
+            scale(.5);
+    }
+
+    70% {
+        transform:
+            translateX(10px)
+            rotate(3deg)
+            scale(1.08);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            translateX(0)
+            rotate(0)
+            scale(1);
+    }
+}
+
+.rickyThreeShow {
+    animation:
+        rickyThreeEnter
+        .8s
+        cubic-bezier(.2,1.5,.3,1)
+        forwards;
+}
+
+@keyframes rickyThreeEnter {
+
+    0% {
+        opacity: 0;
+        transform:
+            translateY(-150px)
+            rotate(15deg)
+            scale(.5);
+    }
+
+    70% {
+        transform:
+            translateY(10px)
+            rotate(-3deg)
+            scale(1.08);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            translateY(0)
+            rotate(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   DIALOGUES
+========================================================= */
+
+.dialogue {
+    position: absolute;
+
+    z-index: 40;
+
+    padding: 14px 24px;
+
+    background: #050505;
+
+    border: 3px solid white;
+
+    color: white;
+
+    font-size: clamp(14px,2vw,28px);
+
+    font-weight: 1000;
+
+    letter-spacing: 2px;
+
+    box-shadow:
+        0 0 10px white,
+        0 0 25px #ff00ff;
+
+    opacity: 0;
+
+    clip-path:
+        polygon(
+            0% 10%,
+            8% 0%,
+            92% 5%,
+            100% 20%,
+            95% 85%,
+            85% 100%,
+            10% 94%,
+            0% 78%
+        );
+}
+
+.dialogue.one {
+    left: 3vw;
+    top: 20vh;
+    transform: rotate(-7deg);
+}
+
+.dialogue.two {
+    right: 5vw;
+    top: 18vh;
+    transform: rotate(6deg);
+}
+
+.dialogue.three {
+    left: 8vw;
+    bottom: 10vh;
+    transform: rotate(-4deg);
+}
+
+.showDialogue {
+    animation:
+        dialoguePop
+        .5s
+        cubic-bezier(.2,1.6,.3,1)
+        forwards;
+}
+
+@keyframes dialoguePop {
+
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(-20deg);
+    }
+
+    70% {
+        transform: scale(1.15) rotate(4deg);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   FINAL RICKROLL
+========================================================= */
+
+#rickroll {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 80;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transform:
+        scale(.2)
+        rotate(-8deg);
+}
+
+
+/* =========================================================
+   LIGHTNING BEHIND TEXT
+========================================================= */
+
+#lightning {
+    position: absolute;
+
+    width: 70vw;
+    height: 110vh;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    z-index: -1;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 8px white)
+        drop-shadow(0 0 25px #9eeaff)
+        drop-shadow(0 0 60px #00aaff);
+}
+
+
+/* Main giant bolt */
+
+#lightning::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: -5%;
+
+    width: 28vw;
+    height: 110vh;
+
+    transform:
+        translateX(-50%)
+        rotate(7deg);
+
+    background: white;
+
+    clip-path:
+        polygon(
+            53% 0%,
+            42% 22%,
+            52% 21%,
+            35% 43%,
+            48% 40%,
+            25% 67%,
+            42% 61%,
+            28% 100%,
+            58% 57%,
+            47% 59%,
+            69% 31%,
+            55% 34%,
+            76% 8%,
+            57% 13%
+        );
+}
+
+
+/* Branch */
+
+#lightning::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 34%;
+    top: 15%;
+
+    width: 35vw;
+    height: 60vh;
+
+    background: white;
+
+    clip-path:
+        polygon(
+            40% 0%,
+            45% 42%,
+            100% 30%,
+            53% 52%,
+            90% 60%,
+            48% 62%,
+            25% 100%,
+            35% 60%,
+            0% 72%,
+            31% 48%
+        );
+}
+
+
+/* Strike animation */
+
+.lightningStrike {
+
+    animation:
+        lightningFlash
+        .8s
+        ease-out
+        forwards;
+}
+
+@keyframes lightningFlash {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%,-50%)
+            scale(.5);
+    }
+
+    7% {
+        opacity: 1;
+    }
+
+    13% {
+        opacity: .05;
+    }
+
+    20% {
+        opacity: 1;
+        transform:
+            translate(-50%,-50%)
+            scale(1.1);
+    }
+
+    28% {
+        opacity: .15;
+    }
+
+    38% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .25;
+    }
+
+    65% {
+        opacity: .8;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%,-50%)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   FINAL TEXT
+========================================================= */
+
+#rickroll h1 {
+
+    margin: 0;
+
+    position: relative;
+
+    z-index: 5;
+
+    text-align: center;
+
+    font-size:
+        clamp(45px,10vw,150px);
+
+    font-weight: 1000;
+
+    line-height: .9;
+
+    color: white;
+
+    text-shadow:
+        0 0 5px white,
+        0 0 20px #ff00ff,
+        0 0 50px #ff00ff,
+        0 0 100px #7000ff;
+}
+
+
+/* Electric effect */
+
+.electricText {
+
+    animation:
+        electricShock
+        .09s
+        infinite;
+}
+
+@keyframes electricShock {
+
+    0% {
+        transform: translate(0,0);
+        filter: brightness(1);
+    }
+
+    20% {
+        transform:
+            translate(-4px,2px)
+            skewX(2deg);
+
+        filter: brightness(2);
+    }
+
+    40% {
+        transform:
+            translate(4px,-2px)
+            skewX(-2deg);
+
+        filter: brightness(.8);
+    }
+
+    60% {
+        transform:
+            translate(-3px,-1px)
+            skewX(1deg);
+
+        filter: brightness(1.8);
+    }
+
+    80% {
+        transform:
+            translate(3px,2px)
+            skewX(-1deg);
+
+        filter: brightness(.9);
+    }
+
+    100% {
+        transform: translate(0,0);
+        filter: brightness(1);
+    }
+}
+
+
+#rickroll p {
+
+    position: relative;
+
+    z-index: 5;
+
+    margin-top: 30px;
+
+    font-size:
+        clamp(14px,2vw,28px);
+
+    letter-spacing: 7px;
+
+    color: #ddd;
+}
+
+
+.rickReveal {
+
+    animation:
+        finalReveal
+        1s
+        cubic-bezier(.15,1.7,.3,1)
+        forwards;
+}
+
+@keyframes finalReveal {
+
+    0% {
+        opacity: 0;
+        transform:
+            scale(.1)
+            rotate(-15deg);
+    }
+
+    60% {
+        opacity: 1;
+        transform:
+            scale(1.15)
+            rotate(3deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            scale(1)
+            rotate(0);
+    }
+}
+
+
+/* =========================================================
+   FLASH
+========================================================= */
+
+#flash {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 300;
+
+    background: white;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+.flash {
+    animation:
+        flashEffect
+        .35s
+        ease;
+}
+
+@keyframes flashEffect {
+
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   SHAKE
+========================================================= */
+
+.shake {
+    animation:
+        screenShake
+        .5s
+        ease;
+}
+
+@keyframes screenShake {
+
+    0% {
+        transform: translate(0);
+    }
+
+    15% {
+        transform: translate(-15px,10px);
+    }
+
+    30% {
+        transform: translate(14px,-12px);
+    }
+
+    45% {
+        transform: translate(-10px,-5px);
+    }
+
+    60% {
+        transform: translate(9px,8px);
+    }
+
+    75% {
+        transform: translate(-5px,3px);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}
+
+
+/* =========================================================
+   REPLAY
+========================================================= */
+
+#replay {
+
+    position: fixed;
+
+    right: 20px;
+    bottom: 20px;
+
+    z-index: 200;
+
+    padding: 10px 18px;
+
+    background: #050505;
+
+    border: 1px solid #ff00ff;
+
+    color: white;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transition: .2s;
+}
+
+#replay:hover {
+
+    box-shadow:
+        0 0 20px #ff00ff;
+
+    transform:
+        scale(1.08);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px) {
+
+    #ascii {
+        font-size: 4px;
+    }
+
+    #asciiContainer {
+        top: 10vh;
+        bottom: 3vh;
+    }
+
+    .ricky {
+        width: 110px;
+    }
+
+    .dialogue {
+        font-size: 12px;
+        padding: 10px 15px;
+    }
+
+    #title {
+        letter-spacing: 3px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div id="glow"></div>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+
+<!-- =====================================================
+     ENTER
+===================================================== -->
+
+<div id="enterScreen">
+
+    <button id="enterButton">
+        ENTER
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     COUNTDOWN
+===================================================== -->
+
+<div id="intro">
+
+    <div id="countdown">
+        3
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div id="main">
+
+
+<div id="title">
+    SYSTEM INITIALIZED
+</div>
+
+
+<!-- =====================================================
+     ASCII
+===================================================== -->
+
+<div id="asciiContainer">
+
+<pre id="ascii">⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣻⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⡽⣯⣻⣻⡽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣻⣻
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡿⣿⣿⣿⣿⣿⣿⡿⣻⣻⣻⣻⣻⣻⡽⣯⣟⢷⠍⠟⠉⠛⢿⢿⣻⣻⢿⣿⣿⣯⣻⡽⣯⣻⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⢯
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣻⣻⣻⡟⡅⠀⠀⠀⠠⠀⠀⠆⡹⣻⣻⡽⣯⣻⡽⣯⣻⡽⣻⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣻⣻
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣿⡟⡛⡜⡜⣎⢦⢶⣖⡴⡀⠠⣿⣿⣿⣟⣟⣟⣟⣟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣻⣻⣻
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣻⢆⢭⢎⢎⢞⡝⣝⡽⡽⡣⢂⣟⢯⢯⢯⣿⣻⣻⡽⣻⡽⣻⣻⣿⣿⣿⣿⣿⣿⣿⡿⣟⣿⣿⣿⣿⣻
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣟⢧⡒⡔⢆⢯⢎⠚⡜⡇⣼⣿⣿⣯⣻⣻⣻⣻⢯⣿⣿⣻⣻⣻⣻⢿⣿⣿⣿⣿⡿⣻⣻⣻⣟⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⢹⢧⢣⢣⠡⡋⡯⣫⢯⡹⣹⣿⣿⣿⣿⣯⣻⣻⣻⣿⣿⣻⣻⣻⣿⣟⣟⢿⣿⣿⣿⣿⣻⢿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠧⢣⢢⢌⣍⡹⡽⣹⣽⣿⣿⣿⣿⣿⡽⣯⣻⢯⣻⢯⣻⣻⣿⣿⣿⣿⣻⣻⣻⣻⢿⢿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⡽⣍⢎⢎⢝⢏⢏⣝⢿⣿⣿⣿⣿⣿⣿⣻⡽⣯⣻⣻⣿⣿⣟⢿⣿⢿⣻⣻⣿⣿⢿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣟⣟⣟⡜⡜⡜⡝⡭⣫⢫⠂⢫⣿⣿⣿⣟⢯⣻⣻⣻⡽⣻⣿⣿⣿⣟⣿⣿⣿⣻⣟⣟⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⢿⡿⣿⢿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⡿⡽⡻⡿⣇⢣⢣⠱⡱⡱⣽⣿⠀⠀⠀⠀⠐⢉⠍⡛⢿⢯⣻⣻⣿⣿⡿⣿⣿⣿⣿⣟⣟⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣟⢿⣿⣿⣿⡿⣿⣿⣟⢿⣻⣻⡿⣏⢋⠀⠀⠀⣹⣻⡇⢣⠱⣥⣻⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣻⣿⣿⣿⣟⣟⣟⡽⣻⣿⡿⡿⣿⣿⣿
+⣿⣿⣿⣿⣿⢿⣿⣿⣿⢿⣻⣿⢿⣿⣿⢿⣻⣻⣻⡃⠀⠀⠀⠀⠀⠀⠠⠠⡣⢢⠱⡉⠙⠛⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣻⡽⣻⣿⢯⣻⣿⣿⢯⣻⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⢿⣻⣻⣿⣟⣟⣟⣿⣿⣿⣿⣿⡿⣟⣟⠄⠀⠀⠀⠀⠀⠀⠀⢀⢆⡑⠡⠉⠋⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣻⢯⣻⡽⣻⣻⡿⣯⢿⣿⣿⣿⣿⣿
+⣿⣻⣟⣟⣿⣿⣿⣿⣟⣟⣟⣟⣿⣿⣿⣿⣟⣟⡽⡄⠀⠀⠀⠀⠀⠀⠀⢀⠁⣯⠚⠹⠶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣻⢯⢯⣻⣿⣿⣻⣻⣻⣿⣿⣿⣿⣿
+⣿⣟⢿⣿⣿⣿⣿⣿⣻⣿⡿⣻⣻⣿⣿⣿⢿⣻⢯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⣟⠖⡖⡤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⢿⣻⣿⣻⣿⣿⣿⣿⣿⣻⢯⣻⣻⣻
+⣿⣻⣻⣿⣿⣿⣿⣻⣽⣿⣿⣟⣟⢿⣿⣿⡿⣻⣻⠀⠀⠀⠀⠀⠀⠀⠀⠀⢦⢢⣠⣀⠀⠀⠀⠀⠩⡛⡝⡜⡖⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣻⣻⣻⣿⣿⡿⣻⣿⣿⣻⣻⣿⣿⡿⣿⣻⣻⣻⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⡜⠈⠁⠀⠀⠀⠀⠀⠌⣌⢎⡜⡜⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣻⣿⣿⡿⣟⢿⣿⣿⣿
+⣟⣿⣿⣿⡽⡽⡽⣻⣹⡽⣿⣿⣿⣻⣻⣻⣻⡽⣻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⢢⠣⠒⠀⠀⠀⠀⠀⠀⠎⢎⢎⢎⢎⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣟⡽⣿⣿⣻⣻⣻⢿⣿⣿
+⣿⣿⢿⣿⣯⣫⣏⢯⣫⣿⣿⣿⣿⣟⣟⣟⣟⡽⡽⠀⡀⠀⠀⠀⠀⢀⢀⠀⠰⡰⠤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡝⡽⡽⣿⣿⣿⣻⡝⡽
+⣯⣯⣯⣯⢯⣫⢫⣻⡿⣻⣿⣿⣿⣿⣿⣻⡽⡽⣭⠂⠀⡰⡱⠡⠢⢂⠆⠀⢠⠰⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⢯⢫⣫⡿⣻⣿⣿⣿⣻⡹
+⡿⡿⣻⣻⣻⢭⣚⢧⢫⣻⣿⣿⡿⡽⡽⡽⡽⣹⣝⢇⠄⠀⠀⠄⠄⠄⡐⠀⠄⡐⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡝⣝⡽⣹⢽⢯⡻⣻⣟⢯⢫⣚⣟⣟⣟⣟⣟⣟⡝
+⣯⣻⡽⣯⣻⡜⡵⡽⣎⢭⣻⡝⡽⣽⡽⣝⣝⣝⡝⣗⢭⢎⠀⠀⠂⠂⠀⠀⠀⡐⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣹⣝⣝⡝⣝⡽⡽⡹⣚⠵⡭⢯⢯⢯⣻⡽⡽⣣
+⣟⣟⡽⣯⢯⢎⢎⢯⣏⡗⡝⣝⡽⣻⢯⣫⢫⢫⣫⣻⢯⡳⡱⡱⡱⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⡝⡝⡝⣝⡝⡝⡭⣫⢫⢭⣚⣝⣝⣝⡽⣹⣹⢧
+⢏⠯⢫⢫⢫⢪⢎⢯⢏⠳⡹⡹⣻⡿⡯⣫⢫⡹⡹⡽⡽⡹⡸⡜⡄⠀⠀⢀⢂⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡭⡭⣫⡹⡹⡭⣫⢫⢫⣚⡜⡝⡝⣝⣝⢽⡹⡭</pre>
+
+</div>
+
+
+<!-- =====================================================
+     THREE RICKYS
+===================================================== -->
+
+<img
+    id="ricky"
+    class="ricky"
+    src="ricky.png"
+    alt="Ricky">
+
+<img
+    id="ricky2"
+    class="ricky"
+    src="ricky2.png"
+    alt="Ricky 2">
+
+<img
+    id="ricky3"
+    class="ricky"
+    src="ricky3.png"
+    alt="Ricky 3">
+
+
+<!-- =====================================================
+     DIALOGUES
+===================================================== -->
+
+<div class="dialogue one">
+    WAIT...
+</div>
+
+<div class="dialogue two">
+    WHAT IS HAPPENING?
+</div>
+
+<div class="dialogue three">
+    OH NO...
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     FINAL
+===================================================== -->
+
+<div id="rickroll">
+
+    <!-- Lightning is BEHIND this text -->
+
+    <div id="lightning"></div>
+
+    <h1>
+        YOU GOT<br>
+        RICK ROLLED
+    </h1>
+
+    <p>
+        THERE WAS NEVER A WAY OUT.
+    </p>
+
+</div>
+
+
+<button id="replay">
+    ↻ REPLAY
+</button>
+
+
+<div id="flash"></div>
+
+
+<!-- =====================================================
+     AUDIO
+===================================================== -->
+
+<audio
+    id="boom"
+    src="vine-boom.mp3"
+    preload="auto">
+</audio>
+
+<audio
+    id="music"
+    src="never-gonna-give-you-up.mp3"
+    preload="auto">
+</audio>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const enterScreen =
+    document.getElementById("enterScreen");
+
+const enterButton =
+    document.getElementById("enterButton");
+
+const intro =
+    document.getElementById("intro");
+
+const countdown =
+    document.getElementById("countdown");
+
+const main =
+    document.getElementById("main");
+
+const ascii =
+    document.getElementById("ascii");
+
+const ricky =
+    document.getElementById("ricky");
+
+const ricky2 =
+    document.getElementById("ricky2");
+
+const ricky3 =
+    document.getElementById("ricky3");
+
+const boom =
+    document.getElementById("boom");
+
+const music =
+    document.getElementById("music");
+
+const flash =
+    document.getElementById("flash");
+
+const rickroll =
+    document.getElementById("rickroll");
+
+const lightning =
+    document.getElementById("lightning");
+
+const replay =
+    document.getElementById("replay");
+
+const dialogues =
+    document.querySelectorAll(".dialogue");
+
+
+/* =========================================================
+   ASCII
+========================================================= */
+
+const asciiText =
+    ascii.textContent.trim();
+
+
+/* =========================================================
+   SLEEP
+========================================================= */
+
+function sleep(ms) {
+
+    return new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+
+}
+
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+function playSound(audio) {
+
+    audio.pause();
+
+    audio.currentTime = 0;
+
+    const result =
+        audio.play();
+
+    if (result) {
+
+        result.catch(error => {
+
+            console.error(
+                "AUDIO ERROR:",
+                error
+            );
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   FLASH
+========================================================= */
+
+function flashScreen() {
+
+    flash.classList.remove("flash");
+
+    void flash.offsetWidth;
+
+    flash.classList.add("flash");
+
+}
+
+
+/* =========================================================
+   SHAKE
+========================================================= */
+
+function shakeScreen() {
+
+    main.classList.remove("shake");
+
+    void main.offsetWidth;
+
+    main.classList.add("shake");
+
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+async function runCountdown() {
+
+    const numbers = [
+        "3",
+        "2",
+        "1"
+    ];
+
+    for (const number of numbers) {
+
+        countdown.textContent =
+            number;
+
+        countdown.classList.remove(
+            "countdownAnimation"
+        );
+
+        void countdown.offsetWidth;
+
+        countdown.classList.add(
+            "countdownAnimation"
+        );
+
+        await sleep(1000);
+
+    }
+
+}
+
+
+/* =========================================================
+   ASCII TYPEWRITER
+========================================================= */
+
+async function typeASCII() {
+
+    ascii.textContent = "";
+
+    ascii.style.opacity = "1";
+
+
+    /*
+       IMPORTANT:
+
+       The Rickroll begins HERE,
+       exactly as the first ASCII
+       characters start appearing.
+    */
+
+    playSound(music);
+
+
+    const duration = 2000;
+
+    const start = performance.now();
+
+
+    function draw(now) {
+
+        const elapsed =
+            now - start;
+
+        const progress =
+            Math.min(
+                elapsed / duration,
+                1
+            );
+
+        const eased =
+            1 -
+            Math.pow(
+                1 - progress,
+                2
+            );
+
+        const amount =
+            Math.floor(
+                asciiText.length * eased
+            );
+
+        ascii.textContent =
+            asciiText.substring(
+                0,
+                amount
+            );
+
+
+        if (progress < 1) {
+
+            requestAnimationFrame(
+                draw
+            );
+
+        }
+        else {
+
+            ascii.textContent =
+                asciiText;
+
+        }
+
+    }
+
+
+    requestAnimationFrame(draw);
+
+    await sleep(duration);
+
+}
+
+
+/* =========================================================
+   RICKYS
+========================================================= */
+
+async function showRickys() {
+
+    ricky.classList.add(
+        "rickyShow"
+    );
+
+    await sleep(450);
+
+    ricky2.classList.add(
+        "rickyTwoShow"
+    );
+
+    await sleep(450);
+
+    ricky3.classList.add(
+        "rickyThreeShow"
+    );
+
+}
+
+
+/* =========================================================
+   FINAL LIGHTNING
+========================================================= */
+
+function lightningStrike() {
+
+    lightning.classList.remove(
+        "lightningStrike"
+    );
+
+    void lightning.offsetWidth;
+
+    lightning.classList.add(
+        "lightningStrike"
+    );
+
+}
+
+
+/* =========================================================
+   MAIN SEQUENCE
+========================================================= */
+
+async function startSequence() {
+
+    replay.style.opacity = "0";
+
+
+    /* RESET */
+
+    rickroll.classList.remove(
+        "rickReveal"
+    );
+
+    lightning.classList.remove(
+        "lightningStrike"
+    );
+
+    ricky.classList.remove(
+        "rickyShow"
+    );
+
+    ricky2.classList.remove(
+        "rickyTwoShow"
+    );
+
+    ricky3.classList.remove(
+        "rickyThreeShow"
+    );
+
+    dialogues.forEach(box => {
+
+        box.classList.remove(
+            "showDialogue"
+        );
+
+    });
+
+    rickroll
+        .querySelector("h1")
+        .classList.remove(
+            "electricText"
+        );
+
+    ascii.textContent = "";
+
+    music.pause();
+
+    music.currentTime = 0;
+
+    main.style.opacity = "0";
+
+    main.style.transform =
+        "scale(1.08)";
+
+
+    /* =====================================================
+       COUNTDOWN
+    ===================================================== */
+
+    intro.style.opacity = "1";
+
+    await runCountdown();
+
+
+    /* =====================================================
+       VINE BOOM
+    ===================================================== */
+
+    playSound(boom);
+
+    flashScreen();
+
+    shakeScreen();
+
+
+    await sleep(200);
+
+
+    /* =====================================================
+       MAIN
+    ===================================================== */
+
+    intro.style.opacity = "0";
+
+    main.style.opacity = "1";
+
+    main.style.transform =
+        "scale(1)";
+
+
+    /* =====================================================
+       RICKYS
+    ===================================================== */
+
+    await sleep(300);
+
+    showRickys();
+
+
+    /* =====================================================
+       ASCII
+
+       Rickroll starts inside typeASCII()
+       at the exact beginning.
+    ===================================================== */
+
+    await sleep(300);
+
+    await typeASCII();
+
+
+    /* =====================================================
+       DIALOGUES
+    ===================================================== */
+
+    await sleep(200);
+
+    dialogues[0].classList.add(
+        "showDialogue"
+    );
+
+
+    await sleep(400);
+
+    dialogues[1].classList.add(
+        "showDialogue"
+    );
+
+
+    await sleep(400);
+
+    dialogues[2].classList.add(
+        "showDialogue"
+    );
+
+
+    /* =====================================================
+       FINAL REVEAL
+    ===================================================== */
+
+    await sleep(700);
+
+    flashScreen();
+
+    shakeScreen();
+
+
+    /*
+       Show final text.
+    */
+
+    rickroll.classList.add(
+        "rickReveal"
+    );
+
+
+    await sleep(350);
+
+
+    /*
+       ONE MASSIVE LIGHTNING STRIKE
+       BEHIND THE TEXT.
+    */
+
+    lightningStrike();
+
+
+    /*
+       Electric shock on the text.
+    */
+
+    rickroll
+        .querySelector("h1")
+        .classList.add(
+            "electricText"
+        );
+
+
+    /*
+       IMPORTANT:
+
+       We DO NOT touch music here.
+
+       It continues playing from the
+       ASCII section until the actual
+       audio file reaches its natural end.
+    */
+
+
+    await sleep(1200);
+
+    replay.style.opacity = "1";
+
+}
+
+
+/* =========================================================
+   ENTER
+========================================================= */
+
+enterButton.addEventListener(
+    "click",
+    async () => {
+
+        enterButton.disabled = true;
+
+
+        /*
+           Unlock audio through the
+           user's click.
+
+           It is immediately paused again,
+           so the actual song still begins
+           at the ASCII sequence.
+        */
+
+        try {
+
+            music.currentTime = 0;
+
+            await music.play();
+
+            music.pause();
+
+            music.currentTime = 0;
+
+        }
+        catch(error) {
+
+            console.error(
+                "Music unlock error:",
+                error
+            );
+
+        }
+
+
+        try {
+
+            boom.currentTime = 0;
+
+            await boom.play();
+
+            boom.pause();
+
+            boom.currentTime = 0;
+
+        }
+        catch(error) {
+
+            console.error(
+                "Boom unlock error:",
+                error
+            );
+
+        }
+
+
+        enterScreen.style.opacity =
+            "0";
+
+        enterScreen.style.transform =
+            "scale(1.2)";
+
+
+        await sleep(700);
+
+
+        enterScreen.style.display =
+            "none";
+
+
+        startSequence();
+
+    }
+);
+
+
+/* =========================================================
+   REPLAY
+========================================================= */
+
+replay.addEventListener(
+    "click",
+    () => {
+
+        music.pause();
+
+        music.currentTime = 0;
+
+        boom.pause();
+
+        boom.currentTime = 0;
+
+        ascii.textContent = "";
+
+        dialogues.forEach(box => {
+
+            box.classList.remove(
+                "showDialogue"
+            );
+
+        });
+
+        ricky.classList.remove(
+            "rickyShow"
+        );
+
+        ricky2.classList.remove(
+            "rickyTwoShow"
+        );
+
+        ricky3.classList.remove(
+            "rickyThreeShow"
+        );
+
+        rickroll.classList.remove(
+            "rickReveal"
+        );
+
+        lightning.classList.remove(
+            "lightningStrike"
+        );
+
+        rickroll
+            .querySelector("h1")
+            .classList.remove(
+                "electricText"
+            );
+
+        replay.style.opacity = "0";
+
+        startSequence();
+
+    }
+);
+
+
+/* =========================================================
+   DEBUGGING
+========================================================= */
+
+boom.addEventListener(
+    "error",
+    () => {
+
+        console.error(
+            "❌ vine-boom.mp3 could not be loaded."
+        );
+
+    }
+);
+
+
+music.addEventListener(
+    "error",
+    () => {
+
+        console.error(
+            "❌ never-gonna-give-you-up.mp3 could not be loaded."
+        );
+
+    }
+);
+
+
+[ricky,ricky2,ricky3].forEach(
+    image => {
+
+        image.addEventListener(
+            "error",
+            () => {
+
+                console.error(
+                    "❌ Image failed:",
+                    image.src
+                );
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
